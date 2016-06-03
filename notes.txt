@@ -1,0 +1,54 @@
+bigger than 3s
+
+longer times for summarization
+google production for music classification uses longer times
+
+
+30s
+30000 spectrogram
+
+take maxpool over that or increase stride
+
+first conv - full height (all freq) by 25 frames (250ms). let's say stride is 1. pool over time.
+
+music - didn't do maxpool over freq, working pretty well. 
+
+-----
+
+imagine
+3 softmax
+
+input entire utterance (3s)
+1:1 input to output. 
+look at 26 frames, predict on frame 20.
+
+
+do conv, now we have 300 outputs (300 frames for 3s), and those outputs are 100d each per timestep.
+
+frame by frame. run an LSTM over that. blend of information about history/time. 
+
+now you have 300 outputs. outputs are each better than the output of a convnet.
+
+
+train to recognize all these diff accents, it might just work on frame level.
+
+adding in more separation and more complexity to the model works better
+
+
+
+
+Input: 40x300 utterance (3 seconds long)
+conv:
+
+-----
+
+If we're only doing a CNN, then we need to input 40x300 (one utterance) because the input would have to contain the temporal information to be able to tell accents apart.
+
+If we're stacking an LSTM on top of the CNN and hoping that the LSTM would learn the temporal dynamics, then we should input something like 40x(26-50) (one frame with context).
+
+
+
+
+
+
+

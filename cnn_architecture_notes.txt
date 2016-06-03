@@ -1,0 +1,70 @@
+
+
+LAYER       SIZE            MEMORY          WEIGHTS
+------------------------------------------------------------------------
+input       300*42*1        12.6K           0
+conv1       300*42*256      3.2M            9*9*1*256 = 20,736
+pool1       300*14*256      1M              0
+conv2       300*14*256      1M              3*4*256*256 = 786,432
+conv2_flat  300*14*256      1M              0
+fc1         1024            1024            (300*14*256)*1024 = 1.1B !!
+fc2         1024            1024            1024*1024 = 1,048,576
+fc3         1024            1024            1024*1024 = 1,048,576
+fc4         1024            1024            1024*1024 = 1,048,576
+softmax     2               2               1024*2 = 2048
+
+
+total memory:
+(6.2M values)(4 bytes/value) / 1024 / 1024 = 24 MB/image forward pass
+
+total params: 
+over 1 billion... this is an issue...
+
+=============================================
+
+* change pool1 to maxpool3 in both time and frequency
+* change conv1 and conv2 filter numbers to 128
+
+LAYER       SIZE            MEMORY          WEIGHTS
+------------------------------------------------------------------------
+input       300*42*1        12.6K           0
+conv1       300*42*128      3.2M            9*9*1*128 = 10K
+pool1       100*14*128      358K            0
+conv2       100*14*128      358K            3*4*128*128 = 200K
+pool2       50*7*128        45K             0
+pool2_flat  50*7*128        45K             0
+fc1         1024            1024            (50*7*128)*1024 = 46M
+fc2         1024            1024            1024*1024 = 1M
+fc3         1024            1024            1024*1024 = 1M
+fc4         1024            1024            1024*1024 = 1M
+softmax     2               2               1024*2 = 2K
+
+
+total memory:
+(4.3M values)(4 bytes/value) / 1024 / 1024 = 16.4 MB/image forward pass
+
+total params: 50M
+
+=============================================
+
+
+
+
+tensorboard --logdir=name1:/path/to/logs/1,name2:/path/to/logs/2
+
+
+python tensorboard.py --port 6006 --logdir=cnn_train:/Users/adhsu/Documents/projects-local/accent/model/tmp/cnn/train,cnn_validate:/Users/adhsu/Documents/projects-local/accent/model/tmp/cnn/validate
+
+tensorboard --port 6007 --logdir=cifar10:/tmp/cifar10_train
+
+tensorboard --logdir=/Users/adhsu/Documents/projects-local/accent/model/tmp/cnn/train
+
+
+papers
+https://sites.google.com/site/tsainath/
+https://36e9b848-a-62cb3a1a-s-sites.googlegroups.com/site/tsainath/tsainath_cnn_dnnSpecialIssue2014.pdf
+raw waveform http://www.ee.columbia.edu/~ronw/pubs/interspeech2015-waveform_cldnn.pdf
+cldnn http://static.googleusercontent.com/media/research.google.com/en//pubs/archive/43455.pdf
+
+
+

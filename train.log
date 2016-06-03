@@ -322,3 +322,125 @@ INFO:tensorflow:Created variable softmax_linear/weights:0 with shape (512, 2) an
 INFO:tensorflow:Created variable softmax_linear/biases:0 with shape (2,) and init <function _initializer at 0x108f65de8>
 INFO:root:step 0, loss = 0.863 (24.56 examples/sec; 5.212 sec/batch), accuracy 0.453
 INFO:root:step 1, loss = 9.337 (32.47 examples/sec; 3.942 sec/batch), accuracy 0.469
+INFO:root:===== start training run: 2016-06-03 16:29:21.457842=====
+INFO:root:BATCH_SIZE 128, CONV1_FILTERS 32, CONV2_FILTERS 64, FC3_SIZE 512, FC4_SIZE 512, FC5_SIZE 512, FC6_SIZE 512
+INFO:root:['tmp/cnn/data/train_1.bin', 'tmp/cnn/data/train_10.bin', 'tmp/cnn/data/train_2.bin', 'tmp/cnn/data/train_3.bin', 'tmp/cnn/data/train_4.bin', 'tmp/cnn/data/train_5.bin', 'tmp/cnn/data/train_6.bin', 'tmp/cnn/data/train_7.bin', 'tmp/cnn/data/train_8.bin', 'tmp/cnn/data/train_9.bin']
+INFO:tensorflow:Created variable conv1/weights:0 with shape (9, 9, 1, 32) and init <function _initializer at 0x1057cfb18>
+INFO:tensorflow:Created variable conv1/biases:0 with shape (32,) and init <function _initializer at 0x1057cfb18>
+INFO:tensorflow:Created variable conv2/weights:0 with shape (3, 4, 32, 64) and init <function _initializer at 0x105888f50>
+INFO:tensorflow:Created variable conv2/biases:0 with shape (64,) and init <function _initializer at 0x105888f50>
+INFO:tensorflow:Created variable fc3/weights:0 with shape (22400, 512) and init <function _initializer at 0x105923140>
+INFO:tensorflow:Created variable fc3/biases:0 with shape (512,) and init <function _initializer at 0x105923140>
+INFO:tensorflow:Created variable fc4/weights:0 with shape (512, 512) and init <function _initializer at 0x105923140>
+INFO:tensorflow:Created variable fc4/biases:0 with shape (512,) and init <function _initializer at 0x105923140>
+INFO:tensorflow:Created variable fc5/weights:0 with shape (512, 512) and init <function _initializer at 0x105923140>
+INFO:tensorflow:Created variable fc5/biases:0 with shape (512,) and init <function _initializer at 0x105923140>
+INFO:tensorflow:Created variable fc6/weights:0 with shape (512, 512) and init <function _initializer at 0x105a06f50>
+INFO:tensorflow:Created variable fc6/biases:0 with shape (512,) and init <function _initializer at 0x105a06f50>
+INFO:tensorflow:Created variable softmax_linear/weights:0 with shape (512, 2) and init <function _initializer at 0x105a4cde8>
+INFO:tensorflow:Created variable softmax_linear/biases:0 with shape (2,) and init <function _initializer at 0x105a4cde8>
+INFO:root:step 0, loss = 0.910 (24.07 examples/sec; 5.318 sec/batch), accuracy 0.391
+INFO:root:step 1, loss = 10.047 (32.99 examples/sec; 3.880 sec/batch), accuracy 0.453
+INFO:root:step 2, loss = 1.835 (33.05 examples/sec; 3.873 sec/batch), accuracy 0.547
+INFO:root:step 3, loss = 0.828 (33.33 examples/sec; 3.841 sec/batch), accuracy 0.539
+INFO:root:step 4, loss = 0.760 (32.89 examples/sec; 3.892 sec/batch), accuracy 0.633
+INFO:root:step 5, loss = 0.513 (29.72 examples/sec; 4.306 sec/batch), accuracy 0.766
+INFO:root:step 6, loss = 0.566 (28.21 examples/sec; 4.538 sec/batch), accuracy 0.680
+INFO:root:step 7, loss = 0.565 (25.84 examples/sec; 4.954 sec/batch), accuracy 0.680
+INFO:root:step 8, loss = 0.542 (28.19 examples/sec; 4.541 sec/batch), accuracy 0.719
+INFO:root:step 9, loss = 0.534 (27.39 examples/sec; 4.672 sec/batch), accuracy 0.734
+INFO:root:step 10, loss = 0.601 (30.27 examples/sec; 4.229 sec/batch), accuracy 0.695
+INFO:root:step 11, loss = 0.472 (29.47 examples/sec; 4.343 sec/batch), accuracy 0.781
+INFO:root:step 12, loss = 0.479 (27.93 examples/sec; 4.582 sec/batch), accuracy 0.766
+INFO:root:step 13, loss = 0.533 (28.94 examples/sec; 4.422 sec/batch), accuracy 0.680
+INFO:root:step 14, loss = 0.540 (30.33 examples/sec; 4.221 sec/batch), accuracy 0.680
+INFO:root:step 15, loss = 0.455 (30.55 examples/sec; 4.189 sec/batch), accuracy 0.789
+INFO:root:step 16, loss = 0.488 (31.74 examples/sec; 4.033 sec/batch), accuracy 0.742
+INFO:root:step 17, loss = 0.432 (31.03 examples/sec; 4.125 sec/batch), accuracy 0.789
+INFO:root:step 18, loss = 0.553 (31.11 examples/sec; 4.114 sec/batch), accuracy 0.727
+INFO:root:step 19, loss = 0.523 (32.19 examples/sec; 3.977 sec/batch), accuracy 0.734
+INFO:root:step 20, loss = 0.506 (32.17 examples/sec; 3.979 sec/batch), accuracy 0.750
+INFO:root:step 21, loss = 0.521 (32.71 examples/sec; 3.913 sec/batch), accuracy 0.727
+INFO:root:step 22, loss = 0.456 (31.24 examples/sec; 4.097 sec/batch), accuracy 0.789
+INFO:root:step 23, loss = 0.444 (32.79 examples/sec; 3.904 sec/batch), accuracy 0.766
+INFO:root:step 24, loss = 0.509 (32.44 examples/sec; 3.946 sec/batch), accuracy 0.758
+INFO:root:step 25, loss = 0.458 (32.20 examples/sec; 3.976 sec/batch), accuracy 0.789
+INFO:root:step 26, loss = 0.491 (33.06 examples/sec; 3.872 sec/batch), accuracy 0.789
+INFO:root:step 27, loss = 0.455 (32.21 examples/sec; 3.974 sec/batch), accuracy 0.758
+INFO:root:step 28, loss = 0.542 (31.84 examples/sec; 4.020 sec/batch), accuracy 0.734
+INFO:root:step 29, loss = 0.432 (32.00 examples/sec; 4.000 sec/batch), accuracy 0.781
+INFO:root:step 30, loss = 0.403 (31.89 examples/sec; 4.013 sec/batch), accuracy 0.797
+INFO:root:step 31, loss = 0.505 (32.11 examples/sec; 3.986 sec/batch), accuracy 0.703
+INFO:root:step 32, loss = 0.513 (32.19 examples/sec; 3.977 sec/batch), accuracy 0.758
+INFO:root:step 33, loss = 0.507 (32.38 examples/sec; 3.953 sec/batch), accuracy 0.758
+INFO:root:step 34, loss = 0.509 (31.83 examples/sec; 4.021 sec/batch), accuracy 0.758
+INFO:root:step 35, loss = 0.492 (31.12 examples/sec; 4.113 sec/batch), accuracy 0.719
+INFO:root:step 36, loss = 0.489 (31.92 examples/sec; 4.010 sec/batch), accuracy 0.727
+INFO:root:step 37, loss = 0.450 (32.07 examples/sec; 3.991 sec/batch), accuracy 0.758
+INFO:root:step 38, loss = 0.549 (31.89 examples/sec; 4.014 sec/batch), accuracy 0.727
+INFO:root:step 39, loss = 0.454 (31.88 examples/sec; 4.015 sec/batch), accuracy 0.750
+INFO:root:step 40, loss = 0.476 (32.71 examples/sec; 3.913 sec/batch), accuracy 0.750
+INFO:root:step 41, loss = 0.572 (31.97 examples/sec; 4.004 sec/batch), accuracy 0.672
+INFO:root:step 42, loss = 0.439 (32.23 examples/sec; 3.972 sec/batch), accuracy 0.773
+INFO:root:step 43, loss = 0.394 (33.10 examples/sec; 3.867 sec/batch), accuracy 0.742
+INFO:root:step 44, loss = 0.411 (31.66 examples/sec; 4.042 sec/batch), accuracy 0.805
+INFO:root:step 45, loss = 0.497 (31.74 examples/sec; 4.032 sec/batch), accuracy 0.742
+INFO:root:step 46, loss = 0.429 (30.91 examples/sec; 4.141 sec/batch), accuracy 0.781
+INFO:root:step 47, loss = 0.495 (29.16 examples/sec; 4.389 sec/batch), accuracy 0.727
+INFO:root:step 48, loss = 0.540 (27.56 examples/sec; 4.644 sec/batch), accuracy 0.719
+INFO:root:step 49, loss = 0.475 (29.23 examples/sec; 4.378 sec/batch), accuracy 0.742
+INFO:root:step 50, loss = 0.437 (29.26 examples/sec; 4.375 sec/batch), accuracy 0.781
+INFO:root:step 51, loss = 0.504 (32.67 examples/sec; 3.919 sec/batch), accuracy 0.719
+INFO:root:step 52, loss = 0.451 (32.08 examples/sec; 3.990 sec/batch), accuracy 0.758
+INFO:root:step 53, loss = 0.443 (31.43 examples/sec; 4.073 sec/batch), accuracy 0.773
+INFO:root:step 54, loss = 0.450 (32.13 examples/sec; 3.984 sec/batch), accuracy 0.789
+INFO:root:step 55, loss = 0.384 (31.12 examples/sec; 4.113 sec/batch), accuracy 0.789
+INFO:root:step 56, loss = 0.418 (32.67 examples/sec; 3.918 sec/batch), accuracy 0.805
+INFO:root:step 57, loss = 0.443 (31.84 examples/sec; 4.020 sec/batch), accuracy 0.750
+INFO:root:step 58, loss = 0.405 (32.75 examples/sec; 3.908 sec/batch), accuracy 0.859
+INFO:root:step 59, loss = 0.512 (31.43 examples/sec; 4.072 sec/batch), accuracy 0.766
+INFO:root:step 60, loss = 0.419 (30.60 examples/sec; 4.183 sec/batch), accuracy 0.773
+INFO:root:step 61, loss = 0.447 (30.73 examples/sec; 4.165 sec/batch), accuracy 0.773
+INFO:root:step 62, loss = 0.471 (31.18 examples/sec; 4.106 sec/batch), accuracy 0.766
+INFO:root:step 63, loss = 0.439 (31.91 examples/sec; 4.012 sec/batch), accuracy 0.758
+INFO:root:===== start training run: 2016-06-03 16:36:04.550789=====
+INFO:root:BATCH_SIZE 128, CONV1_FILTERS 32, CONV2_FILTERS 64, FC3_SIZE 512, FC4_SIZE 512, FC5_SIZE 512, FC6_SIZE 512
+INFO:root:['tmp/cnn/data/train_1.bin', 'tmp/cnn/data/train_10.bin', 'tmp/cnn/data/train_2.bin', 'tmp/cnn/data/train_3.bin', 'tmp/cnn/data/train_4.bin', 'tmp/cnn/data/train_5.bin', 'tmp/cnn/data/train_6.bin', 'tmp/cnn/data/train_7.bin', 'tmp/cnn/data/train_8.bin', 'tmp/cnn/data/train_9.bin']
+INFO:tensorflow:Created variable conv1/weights:0 with shape (9, 9, 1, 32) and init <function _initializer at 0x10ea40b18>
+INFO:tensorflow:Created variable conv1/biases:0 with shape (32,) and init <function _initializer at 0x10ea40b18>
+INFO:tensorflow:Created variable conv2/weights:0 with shape (3, 4, 32, 64) and init <function _initializer at 0x10eaf9f50>
+INFO:tensorflow:Created variable conv2/biases:0 with shape (64,) and init <function _initializer at 0x10eaf9f50>
+INFO:tensorflow:Created variable fc3/weights:0 with shape (22400, 512) and init <function _initializer at 0x10eb94140>
+INFO:tensorflow:Created variable fc3/biases:0 with shape (512,) and init <function _initializer at 0x10eb94140>
+INFO:tensorflow:Created variable fc4/weights:0 with shape (512, 512) and init <function _initializer at 0x10eb94140>
+INFO:tensorflow:Created variable fc4/biases:0 with shape (512,) and init <function _initializer at 0x10eb94140>
+INFO:tensorflow:Created variable fc5/weights:0 with shape (512, 512) and init <function _initializer at 0x10eb94140>
+INFO:tensorflow:Created variable fc5/biases:0 with shape (512,) and init <function _initializer at 0x10eb94140>
+INFO:tensorflow:Created variable fc6/weights:0 with shape (512, 512) and init <function _initializer at 0x10ec77f50>
+INFO:tensorflow:Created variable fc6/biases:0 with shape (512,) and init <function _initializer at 0x10ec77f50>
+INFO:tensorflow:Created variable softmax_linear/weights:0 with shape (512, 2) and init <function _initializer at 0x10ecbdde8>
+INFO:tensorflow:Created variable softmax_linear/biases:0 with shape (2,) and init <function _initializer at 0x10ecbdde8>
+INFO:root:step 0, loss = 0.727 (22.95 examples/sec; 5.577 sec/batch), accuracy 0.484
+INFO:root:step 10, loss = 0.659 (31.08 examples/sec; 4.119 sec/batch), accuracy 0.617
+INFO:root:step 20, loss = 0.497 (29.91 examples/sec; 4.280 sec/batch), accuracy 0.727
+INFO:root:===== start training run: 2016-06-03 16:38:15.384559=====
+INFO:root:BATCH_SIZE 128, CONV1_FILTERS 32, CONV2_FILTERS 64, FC3_SIZE 512, FC4_SIZE 512, FC5_SIZE 512, FC6_SIZE 512
+INFO:root:['tmp/cnn/data/train_1.bin', 'tmp/cnn/data/train_10.bin', 'tmp/cnn/data/train_2.bin', 'tmp/cnn/data/train_3.bin', 'tmp/cnn/data/train_4.bin', 'tmp/cnn/data/train_5.bin', 'tmp/cnn/data/train_6.bin', 'tmp/cnn/data/train_7.bin', 'tmp/cnn/data/train_8.bin', 'tmp/cnn/data/train_9.bin']
+INFO:tensorflow:Created variable conv1/weights:0 with shape (9, 9, 1, 32) and init <function _initializer at 0x108c0eb18>
+INFO:tensorflow:Created variable conv1/biases:0 with shape (32,) and init <function _initializer at 0x108c0eb18>
+INFO:tensorflow:Created variable conv2/weights:0 with shape (3, 4, 32, 64) and init <function _initializer at 0x108cc7f50>
+INFO:tensorflow:Created variable conv2/biases:0 with shape (64,) and init <function _initializer at 0x108cc7f50>
+INFO:tensorflow:Created variable fc3/weights:0 with shape (22400, 512) and init <function _initializer at 0x108d62140>
+INFO:tensorflow:Created variable fc3/biases:0 with shape (512,) and init <function _initializer at 0x108d62140>
+INFO:tensorflow:Created variable fc4/weights:0 with shape (512, 512) and init <function _initializer at 0x108d62140>
+INFO:tensorflow:Created variable fc4/biases:0 with shape (512,) and init <function _initializer at 0x108d62140>
+INFO:tensorflow:Created variable fc5/weights:0 with shape (512, 512) and init <function _initializer at 0x108d62140>
+INFO:tensorflow:Created variable fc5/biases:0 with shape (512,) and init <function _initializer at 0x108d62140>
+INFO:tensorflow:Created variable fc6/weights:0 with shape (512, 512) and init <function _initializer at 0x108e45f50>
+INFO:tensorflow:Created variable fc6/biases:0 with shape (512,) and init <function _initializer at 0x108e45f50>
+INFO:tensorflow:Created variable softmax_linear/weights:0 with shape (512, 2) and init <function _initializer at 0x108e8bde8>
+INFO:tensorflow:Created variable softmax_linear/biases:0 with shape (2,) and init <function _initializer at 0x108e8bde8>
+INFO:root:step 0, loss = 0.730 (20.63 examples/sec; 6.205 sec/batch), accuracy 0.477
+INFO:root:step 1, loss = 2.543 (27.72 examples/sec; 4.617 sec/batch), accuracy 0.516
+INFO:root:step 2, loss = 5.691 (26.03 examples/sec; 4.917 sec/batch), accuracy 0.484
+INFO:root:step 3, loss = 0.956 (30.89 examples/sec; 4.144 sec/batch), accuracy 0.727

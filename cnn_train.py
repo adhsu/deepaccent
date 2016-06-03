@@ -67,7 +67,7 @@ def train():
       summary, loss_value, accuracy_value, _ = sess.run([summary_op, loss, accuracy, train_op])
       duration = time.time() - start_time
 
-      if step % 1 == 0: # summaries
+      if step % config.summary_every_n_steps == 0: # summaries
         
         examples_per_sec = BATCH_SIZE / duration
         sec_per_batch = float(duration)
@@ -80,7 +80,7 @@ def train():
         print(log_str_1)
         logging.info(log_str_1)
 
-      if (step % 10 == 0) and (step>0): # save weights to file
+      if (step % config.ckpt_every_n_steps == 0) and (step>0): # save weights to file
         checkpoint_path = os.path.join(TRAIN_DIR, 'model.ckpt')
 
         saver.save(sess, checkpoint_path, global_step=step)

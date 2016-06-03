@@ -5,6 +5,9 @@ class Config(object):
 
 config = Config({
   'name': 'c32c64fc512_noreg',
+  'summary_every_n_steps': 1,
+  'ckpt_every_n_steps': 100,
+
 
   #### DATA
   'train_dir': 'tmp/cnn/train', # summaries + ckpts

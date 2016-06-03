@@ -38,7 +38,7 @@ def train():
     accuracy = cnn.accuracy(logits, labels)
 
     # train model with one batch of examples
-    train_op = cnn.train(loss)
+    train_op = cnn.train(loss, global_step)
 
     # create saver
     saver = tf.train.Saver(tf.all_variables())

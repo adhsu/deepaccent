@@ -20,6 +20,7 @@ elif FLAGS.env=='prod':
   DATA_DIR = '/mnt/deepaccent-data'
 
 BATCH_SIZE = config.batch_size # minibatch size
+MOVING_AVERAGE_DECAY = config.moving_average_decay
 
 DIM_TIME = config.example_height
 DIM_FREQ = config.example_width
@@ -98,7 +99,7 @@ def inference(examples):
   with tf.variable_scope('fc3') as scope:
     reshape = tf.reshape(batch_norm2, [BATCH_SIZE, -1])
     dim = (DIM_TIME/POOL1_HEIGHT/POOL2_HEIGHT) * (DIM_FREQ/POOL1_WIDTH/POOL2_WIDTH) * CONV2_FILTERS
-    weights = _variable('weights', [dim, FC3_SIZE], tf.contrib.layers.xavier_initializer())
+    weights = _variable('weights', [dim, FC3_SIZE], tf.contrib.layers.xavier_initializer(), wd=config.fc_wd)
     biases = _variable('biases', [FC3_SIZE], tf.constant_initializer(0.1))
 
     fc3 = tf.nn.relu(tf.matmul(reshape, weights) + biases, name=scope.name)
@@ -106,7 +107,7 @@ def inference(examples):
 
   # FC4
   with tf.variable_scope('fc4') as scope:
-    weights = _variable('weights', [FC3_SIZE, FC4_SIZE], tf.contrib.layers.xavier_initializer())
+    weights = _variable('weights', [FC3_SIZE, FC4_SIZE], tf.contrib.layers.xavier_initializer(), wd=config.fc_wd)
     biases = _variable('biases', [FC4_SIZE], tf.constant_initializer(0.1))
 
     fc4 = tf.nn.relu(tf.matmul(fc3, weights) + biases, name=scope.name)
@@ -114,7 +115,7 @@ def inference(examples):
 
   # FC5
   with tf.variable_scope('fc5') as scope:
-    weights = _variable('weights', [FC4_SIZE, FC5_SIZE], tf.contrib.layers.xavier_initializer())
+    weights = _variable('weights', [FC4_SIZE, FC5_SIZE], tf.contrib.layers.xavier_initializer(), wd=config.fc_wd)
     biases = _variable('biases', [FC5_SIZE], tf.constant_initializer(0.1))
 
     fc5 = tf.nn.relu(tf.matmul(fc4, weights) + biases, name=scope.name)
@@ -122,7 +123,7 @@ def inference(examples):
 
   # FC6
   with tf.variable_scope('fc6') as scope:
-    weights = _variable('weights', [FC5_SIZE, FC6_SIZE], tf.contrib.layers.xavier_initializer())
+    weights = _variable('weights', [FC5_SIZE, FC6_SIZE], tf.contrib.layers.xavier_initializer(), wd=config.fc_wd)
     biases = _variable('biases', [FC6_SIZE], tf.constant_initializer(0.1))
 
     fc6 = tf.nn.relu(tf.matmul(fc5, weights) + biases, name=scope.name)
@@ -142,8 +143,14 @@ def loss(logits, labels):
   cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
       logits, labels, name='cross_entropy_per_example')
   cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy')
-  tf.scalar_summary('cross_entropy_loss', cross_entropy_mean)
-  return cross_entropy_mean
+  
+  tf.add_to_collection('losses', cross_entropy_mean)
+
+  # tf.scalar_summary('cross_entropy_loss', cross_entropy_mean)
+
+  # total_loss = cross_entropy loss + weight decay L2 loss
+  total_loss = tf.add_n(tf.get_collection('losses'), name='total_loss')
+  return total_loss
 
 def accuracy(logits, labels):
   logits_argmax = tf.cast(tf.argmax(logits,1), tf.int32)
@@ -153,10 +160,43 @@ def accuracy(logits, labels):
   return accuracy
 
 
-def train(loss):
+def _add_loss_summaries(total_loss):
+  # Compute the moving average of all individual losses and the total loss.
+  loss_averages = tf.train.ExponentialMovingAverage(0.9, name='avg')
+  losses = tf.get_collection('losses')
+  loss_averages_op = loss_averages.apply(losses + [total_loss])
+
+  # Attach a scalar summary to all individual losses and the total loss; do the
+  # same for the averaged version of the losses.
+  for l in losses + [total_loss]:
+    # Name each loss as '(raw)' and name the moving average version of the loss
+    # as the original loss name.
+    tf.scalar_summary(l.op.name +' (raw)', l)
+    tf.scalar_summary(l.op.name, loss_averages.average(l))
+
+  return loss_averages_op
+
+
+
+def train(total_loss, global_step):
   # returns train_op
   lr = config.lr
-  train_op = tf.train.AdamOptimizer(lr).minimize(loss)
+
+  # Generate moving averages of all losses and associated summaries.
+  loss_averages_op = _add_loss_summaries(total_loss)
+
+  # Add histograms for trainable variables.
+  for var in tf.trainable_variables():
+    tf.histogram_summary(var.op.name, var)
+
+  # Track the moving averages of all trainable variables.
+  variable_averages = tf.train.ExponentialMovingAverage(
+      MOVING_AVERAGE_DECAY, global_step)
+  variables_averages_op = variable_averages.apply(tf.trainable_variables())
+
+  with tf.control_dependencies([variables_averages_op]):
+    train_op = tf.train.AdamOptimizer(lr, name='train').minimize(total_loss)
+
   return train_op
 
 def main(_):

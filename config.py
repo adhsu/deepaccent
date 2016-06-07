@@ -6,7 +6,7 @@ class Config(object):
 
 
 config = Config({
-  'name': 'c32c64fc256_wd4e-3',
+  'name': '1_c32c64fc256_wd1e-3',
   'summary_every_n_steps': 1,
   'ckpt_every_n_steps': 100,
 

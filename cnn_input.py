@@ -1,7 +1,7 @@
 import os
 import tensorflow as tf
 import glob
-import logging
+# import logging
 from config import config
 
 # constants
@@ -11,7 +11,7 @@ EXAMPLE_WIDTH = config.example_width
 NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = config.num_examples_per_epoch_train
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = config.num_examples_per_epoch_eval
 
-logging.basicConfig(filename='train.log', level=logging.INFO)
+# logging.basicConfig(filename='train.log', level=logging.INFO)
 
 def read_cnn(filename_queue):
   
@@ -128,9 +128,9 @@ def inputs(data_type, data_dir, batch_size):
     if not tf.gfile.Exists(f):
       raise ValueError('Failed to find file: ' + f)
 
-  print 'input data type', data_type
-  print 'constructing inputs, filenames are ', filenames
-  logging.info(filenames)
+  # print 'input data type', data_type
+  # print 'constructing inputs, filenames are ', filenames
+  # logging.info(filenames)
 
   # Create a queue that produces the filenames to read.
   filename_queue = tf.train.string_input_producer(filenames)

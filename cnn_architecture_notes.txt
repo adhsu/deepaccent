@@ -52,6 +52,8 @@ total params: 50M
 
 tensorboard --logdir=name1:/path/to/logs/1,name2:/path/to/logs/2
 
+--logdir=name1:dir1,name2:dir2
+
 
 python tensorboard.py --port 6006 --logdir=cnn_train:/Users/adhsu/Documents/projects-local/accent/model/tmp/cnn/train,cnn_validate:/Users/adhsu/Documents/projects-local/accent/model/tmp/cnn/validate
 

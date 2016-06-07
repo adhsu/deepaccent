@@ -7,21 +7,21 @@ import tensorflow as tf
 
 import cnn
 from config import config
+filepath = os.path.dirname(os.path.abspath(__file__))
 
 # constants
 BATCH_SIZE = config.batch_size
-# TRAIN_DIR = os.path.join(config.train_dir, config.name+'-'+str(time.time()))
-TRAIN_DIR = os.path.join(config.train_dir, config.name)
-# VALIDATE_DIR = 'tmp/cnn/validate' # storing validation summaries
+TRAIN_DIR = os.path.join(filepath, 'tmp/train', config.name)
 MAX_STEPS = config.max_steps
-
-logging.basicConfig(filename='train.log', level=logging.INFO)
-
 
 def train():
   with tf.Graph().as_default():
     # start logging
+    logging.basicConfig(filename=os.path.join(TRAIN_DIR, 'train.log'), level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
     log_str_0 = '===== start training run: ' + str(datetime.now()) + '====='
+    print(log_str_0)
     logging.info(log_str_0)
     logging.info(cnn.log())
 
@@ -34,7 +34,7 @@ def train():
     logits = cnn.inference(examples)
 
     # compute loss
-    loss = cnn.loss(logits, labels)
+    loss, losses_collection = cnn.loss(logits, labels)
     accuracy = cnn.accuracy(logits, labels)
 
     # train model with one batch of examples
@@ -65,7 +65,15 @@ def train():
       
       start_time = time.time()
       summary, loss_value, accuracy_value, _ = sess.run([summary_op, loss, accuracy, train_op])
+
+      loss_breakdown = [(str(l.op.name), sess.run(l)) for l in losses_collection]
+      # for l in losses_collection:
+      #   l_value = sess.run(l)
+      #   print ('%s, %.4f') % (l.op.name, l_value)
+        
       duration = time.time() - start_time
+
+      assert not np.isnan(loss_value), 'Model diverged with loss = NaN'
 
       if step % config.summary_every_n_steps == 0: # summaries
         
@@ -74,9 +82,9 @@ def train():
         
         train_writer.add_summary(summary, step)
 
-        log_str_1 = ('step %d, loss = %.3f (%.2f examples/sec; %.3f sec/batch), accuracy %.3f') % (step, loss_value,
+        log_str_1 = ('step %d, loss = %.3f (%.2f examples/sec; %.3f sec/batch), accuracy %.3f   ') % (step, loss_value,
                              examples_per_sec, sec_per_batch, accuracy_value)
-
+        log_str_1 += str(loss_breakdown)
         print(log_str_1)
         logging.info(log_str_1)
 
@@ -85,13 +93,15 @@ def train():
 
         saver.save(sess, checkpoint_path, global_step=step)
         print "Checkpoint saved at step %d" % step
+        logging.info("Checkpoint saved at step %d" % step)
 
 
 def main(_):
   # if tf.gfile.Exists(TRAIN_DIR):
   #   tf.gfile.DeleteRecursively(TRAIN_DIR)
   # tf.gfile.MakeDirs(TRAIN_DIR)
-  
+  if not tf.gfile.Exists(TRAIN_DIR):
+    tf.gfile.MakeDirs(TRAIN_DIR)
   train()
 
 if __name__ == '__main__':

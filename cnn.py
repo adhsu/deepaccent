@@ -13,14 +13,22 @@ FLAGS = tf.app.flags.FLAGS
 
 # CONSTANTS
 tf.app.flags.DEFINE_string('env', 'dev', """either string 'dev' or 'prod'""")
-
+filepath = os.path.dirname(os.path.abspath(__file__))
 if FLAGS.env=='dev':
-  DATA_DIR = 'tmp/cnn/data'
+  DATA_DIR = os.path.join(filepath, 'tmp/data')
 elif FLAGS.env=='prod':
   DATA_DIR = '/mnt/deepaccent-data'
 
+NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = config.num_examples_per_epoch_train
 BATCH_SIZE = config.batch_size # minibatch size
-MOVING_AVERAGE_DECAY = config.moving_average_decay
+
+
+# Constants describing the training process.
+MOVING_AVERAGE_DECAY = config.moving_average_decay    # The decay to use for the moving average.
+NUM_EPOCHS_PER_DECAY = config.n_epochs_per_decay      # Epochs after which learning rate decays.
+LEARNING_RATE_DECAY_FACTOR = config.lr_decay_factor  # Learning rate decay factor.
+INITIAL_LEARNING_RATE = config.lr_initial       # Initial learning rate.
+
 
 DIM_TIME = config.example_height
 DIM_FREQ = config.example_width
@@ -51,7 +59,7 @@ NUM_CLASSES = config.num_classes
 
 # LOGGING
 def log():
-  log_str = ('BATCH_SIZE %d, CONV1_FILTERS %d, CONV2_FILTERS %d, FC3_SIZE %d, FC4_SIZE %d, FC5_SIZE %d, FC6_SIZE %d') % (BATCH_SIZE, CONV1_FILTERS, CONV2_FILTERS, FC3_SIZE, FC4_SIZE, FC5_SIZE, FC6_SIZE)
+  log_str = ('name %s, BATCH_SIZE %d, CONV1_FILTERS %d, CONV2_FILTERS %d, FC3_SIZE %d, FC4_SIZE %d, FC5_SIZE %d, FC6_SIZE %d, WD %.4f, LRinitial %.4f') % (config.name, BATCH_SIZE, CONV1_FILTERS, CONV2_FILTERS, FC3_SIZE, FC4_SIZE, FC5_SIZE, FC6_SIZE, config.fc_wd, config.lr_initial)
   return log_str
 
 # NETWORK
@@ -150,7 +158,7 @@ def loss(logits, labels):
 
   # total_loss = cross_entropy loss + weight decay L2 loss
   total_loss = tf.add_n(tf.get_collection('losses'), name='total_loss')
-  return total_loss
+  return total_loss, tf.get_collection('losses')
 
 def accuracy(logits, labels):
   logits_argmax = tf.cast(tf.argmax(logits,1), tf.int32)
@@ -179,30 +187,52 @@ def _add_loss_summaries(total_loss):
 
 
 def train(total_loss, global_step):
-  # returns train_op
-  lr = config.lr
+  num_batches_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / BATCH_SIZE
+  decay_steps = int(num_batches_per_epoch * NUM_EPOCHS_PER_DECAY)
+
+  lr = tf.train.exponential_decay(INITIAL_LEARNING_RATE,
+                                  global_step,
+                                  decay_steps,
+                                  LEARNING_RATE_DECAY_FACTOR,
+                                  staircase=True)
+  tf.scalar_summary('learning_rate', lr)
 
   # Generate moving averages of all losses and associated summaries.
   loss_averages_op = _add_loss_summaries(total_loss)
 
+  # Compute gradients.
+  with tf.control_dependencies([loss_averages_op]):
+    opt = tf.train.GradientDescentOptimizer(lr)
+    grads = opt.compute_gradients(total_loss)
+
+  # Apply gradients.
+  apply_gradient_op = opt.apply_gradients(grads, global_step=global_step)
+
   # Add histograms for trainable variables.
   for var in tf.trainable_variables():
     tf.histogram_summary(var.op.name, var)
+
+  # Add histograms for gradients.
+  for grad, var in grads:
+    if grad is not None:
+      tf.histogram_summary(var.op.name + '/gradients', grad)
 
   # Track the moving averages of all trainable variables.
   variable_averages = tf.train.ExponentialMovingAverage(
       MOVING_AVERAGE_DECAY, global_step)
   variables_averages_op = variable_averages.apply(tf.trainable_variables())
 
-  with tf.control_dependencies([variables_averages_op]):
-    train_op = tf.train.AdamOptimizer(lr, name='train').minimize(total_loss)
+  with tf.control_dependencies([apply_gradient_op, variables_averages_op]):
+    train_op = tf.no_op(name='train')
+
+  # with tf.control_dependencies([variables_averages_op]):
+  #   train_op = tf.train.AdamOptimizer(lr, name='train').minimize(total_loss)
 
   return train_op
 
 def main(_):
   if not FLAGS.env:
     msg = ('env flag must be specified. Either dev or prod.')
-    logging.error(msg)
     print(msg)
     return -1
 

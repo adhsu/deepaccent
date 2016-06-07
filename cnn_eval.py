@@ -6,10 +6,12 @@ import numpy as np
 import tensorflow as tf
 import cnn
 from config import config
+filepath = os.path.dirname(os.path.abspath(__file__))
+
 
 BATCH_SIZE = config.batch_size
-EVAL_DIR = config.eval_dir
-CHECKPOINT_DIR = os.path.join(config.train_dir, config.name) # read model checkpoints from here
+EVAL_DIR = os.path.join(filepath, 'tmp/eval', config.name)
+CHECKPOINT_DIR = os.path.join(filepath, 'tmp/train', config.name) # read model checkpoints from here
 EVAL_INTERVAL_SECS = config.eval_interval_secs # how often to run eval
 NUM_EXAMPLES = config.num_examples_per_epoch_eval
 RUN_ONCE = config.run_once

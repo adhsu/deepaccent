@@ -4,7 +4,7 @@ class Config(object):
 
 
 config = Config({
-  'name': 'c128c128fc512_wd0.0',
+  'name': 'c128c128fc512_wd0',
   'summary_every_n_steps': 1,
   'ckpt_every_n_steps': 100,
 
@@ -17,10 +17,10 @@ config = Config({
   'num_classes': 2,
   'example_height': 300, # time/frames
   'example_width': 42, # frequency
-  'conv1_filters': 128,
-  'conv2_filters': 128,
-  'all_fc_size': 512,
-  'fc_wd': 0.004, # fc layer weight decay
+  'conv1_filters': 64,
+  'conv2_filters': 64,
+  'all_fc_size': 256,
+  'fc_wd': 0.0, # fc layer weight decay
   
   #### TRAINING
   'batch_size': 128,

@@ -81,7 +81,7 @@ def train():
         
         train_writer.add_summary(summary, step)
 
-        log_str_1 = ('step %d, loss = %.3f (%.2f examples/sec; %.3f sec/batch), accuracy %.3f   ') % (step, loss_value,
+        log_str_1 = ('%s: step %d, loss = %.3f (%.2f examples/sec; %.3f sec/batch), accuracy %.3f   ') % (datetime.now(), step, loss_value,
                              examples_per_sec, sec_per_batch, accuracy_value)
         log_str_1 += str(loss_breakdown)
         print(log_str_1)

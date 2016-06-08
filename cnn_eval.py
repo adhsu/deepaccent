@@ -14,7 +14,6 @@ EVAL_DIR = os.path.join(filepath, 'tmp/eval', config.name)
 CHECKPOINT_DIR = os.path.join(filepath, 'tmp/train', config.name) # read model checkpoints from here
 EVAL_INTERVAL_SECS = config.eval_interval_secs # how often to run eval
 NUM_EXAMPLES = config.num_examples_per_epoch_eval
-RUN_ONCE = config.run_once
 
 def eval_once(saver, summary_writer, top_k_op, summary_op):
   """Run Eval once.
@@ -71,7 +70,7 @@ def eval_once(saver, summary_writer, top_k_op, summary_op):
     coord.join(threads, stop_grace_period_secs=10)
 
 
-def evaluate():
+def evaluate(run_once=False):
   with tf.Graph().as_default() as graph:
     
     examples, labels = cnn.inputs(data_type='test')
@@ -81,21 +80,18 @@ def evaluate():
     top_k_op = tf.nn.in_top_k(logits, labels, 1)
 
     # Restore the moving average version of the learned variables for eval.
-    # variable_averages = tf.train.ExponentialMovingAverage(
-    #     cifar10.MOVING_AVERAGE_DECAY)
-    # variables_to_restore = variable_averages.variables_to_restore()
-    # saver = tf.train.Saver(variables_to_restore)
-
-    saver = tf.train.Saver(tf.all_variables())
+    variable_averages = tf.train.ExponentialMovingAverage(config.moving_average_decay)
+    variables_to_restore = variable_averages.variables_to_restore()
+    saver = tf.train.Saver(variables_to_restore)
 
     # Build the summary operation based on the TF collection of Summaries.
     summary_op = tf.merge_all_summaries()
 
-    summary_writer = tf.train.SummaryWriter(os.path.join(EVAL_DIR, config.name), graph)
+    summary_writer = tf.train.SummaryWriter(EVAL_DIR, graph)
 
     while True:
       eval_once(saver, summary_writer, top_k_op, summary_op)
-      if RUN_ONCE:
+      if run_once==True:
         break
       time.sleep(EVAL_INTERVAL_SECS)
 

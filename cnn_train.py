@@ -1,3 +1,4 @@
+import resource
 from datetime import datetime
 import os.path
 import time
@@ -6,6 +7,7 @@ import numpy as np
 import tensorflow as tf
 
 import cnn
+import cnn_eval
 from config import config
 filepath = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,7 +22,7 @@ def train():
     logging.basicConfig(filename=os.path.join(TRAIN_DIR, 'train.log'), level=logging.INFO)
     logger = logging.getLogger(__name__)
 
-    log_str_0 = '===== start training run: ' + str(datetime.now()) + '====='
+    log_str_0 = '===== START TRAIN RUN: ' + str(datetime.now()) + '====='
     print(log_str_0)
     logging.info(log_str_0)
     logging.info(cnn.log())
@@ -67,9 +69,6 @@ def train():
       summary, loss_value, accuracy_value, _ = sess.run([summary_op, loss, accuracy, train_op])
 
       loss_breakdown = [(str(l.op.name), sess.run(l)) for l in losses_collection]
-      # for l in losses_collection:
-      #   l_value = sess.run(l)
-      #   print ('%s, %.4f') % (l.op.name, l_value)
         
       duration = time.time() - start_time
 
@@ -88,12 +87,19 @@ def train():
         print(log_str_1)
         logging.info(log_str_1)
 
-      if (step % config.ckpt_every_n_steps == 0) and (step>0): # save weights to file
-        checkpoint_path = os.path.join(TRAIN_DIR, 'model.ckpt')
+        print("memory usage: {} Mb".format(float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)/1000000.0))
+        logging.info(float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)/1000000.0)
 
+
+      if (step % config.ckpt_every_n_steps == 0) and (step>0): # save weights to file & validate
+
+        checkpoint_path = os.path.join(TRAIN_DIR, 'model.ckpt')
         saver.save(sess, checkpoint_path, global_step=step)
         print "Checkpoint saved at step %d" % step
         logging.info("Checkpoint saved at step %d" % step)
+
+        # validate
+        cnn_eval.evaluate(run_once=True)
 
 
 def main(_):

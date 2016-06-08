@@ -147,7 +147,7 @@ def inputs(data_type, data_dir, batch_size):
   read_input.label = tf.cast(read_input.label, tf.int32)
 
   # Ensure that the random shuffling has good mixing properties.
-  min_fraction_of_examples_in_queue = 0.4
+  min_fraction_of_examples_in_queue = 0.04 # 135,600 examples for train, 4,400 for eval
   min_queue_examples = int(num_examples_per_epoch *
                            min_fraction_of_examples_in_queue)
 

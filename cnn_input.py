@@ -1,17 +1,15 @@
 import os
 import tensorflow as tf
 import glob
-# import logging
 from config import config
+from utils import log
 
 # constants
 NUM_CLASSES = config.num_classes
 EXAMPLE_HEIGHT = config.example_height
 EXAMPLE_WIDTH = config.example_width
-NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = config.num_examples_per_epoch_train
-NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = config.num_examples_per_epoch_eval
-
-# logging.basicConfig(filename='train.log', level=logging.INFO)
+# NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = config.num_examples_per_epoch_train
+# NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = config.num_examples_per_epoch_eval
 
 def read_cnn(filename_queue):
   
@@ -48,41 +46,13 @@ def read_cnn(filename_queue):
   # The remaining bytes after the label represent the image, which we reshape
   # from [depth * height * width] to [depth, height, width].
   result.example = tf.slice(value, [label_bytes/bytes_per_value], [example_bytes/bytes_per_value])
-  # result_data = tf.cast(result_data_raw, tf.float32)
-
-  # print ('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-  # print ('%s' % value)
-  # print ('%s' % result.key)
-  # print ('%s' % result.label)
-  # print ('%s' % result.example)
-  # print ('>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-
-  # depth_major = tf.reshape(result_data, [result.depth, result.height, result.width])
-  # # Convert from [depth, height, width] to [height, width, depth].
-  # result.example = tf.transpose(depth_major, [1, 2, 0])
 
   return result
 
 
 def _generate_example_and_label_batch(example, label, min_queue_examples,
                                     batch_size, shuffle):
-  """Construct a queued batch of images and labels.
-
-  Args:
-    image: 3-D Tensor of [height, width, 3] of type.float32.
-    label: 1-D Tensor of type.int32
-    min_queue_examples: int32, minimum number of samples to retain
-      in the queue that provides of batches of examples.
-    batch_size: Number of images per batch.
-    shuffle: boolean indicating whether to use a shuffling queue.
-
-  Returns:
-    images: Images. 4D tensor of [batch_size, height, width, 3] size.
-    labels: Labels. 1D tensor of [batch_size] size.
-  """
-  # Create a queue that shuffles the examples, and then
-  # read 'batch_size' images + labels from the example queue.
-  
+ 
   num_preprocess_threads = 16
   if shuffle:
     examples, label_batch = tf.train.shuffle_batch(
@@ -104,33 +74,42 @@ def _generate_example_and_label_batch(example, label, min_queue_examples,
   return examples, tf.reshape(label_batch, [batch_size])
 
 def inputs(data_type, data_dir, batch_size):
-  """Construct input for CIFAR evaluation using the Reader ops.
-
-  Args:
-    data_dir: Path to the CIFAR-10 data directory.
-    batch_size: Number of images per batch.
-
-  Returns:
-    images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 3] size.
-    labels: Labels. 1D tensor of [batch_size] size.
-  """
-
+  
   if data_type == 'train':
-    filenames = glob.glob(data_dir + '/train_*.bin')
-    num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
+    
+    if len(config.use_train_bins)>0:
+      log('train_bins specified in config...')
+      filenames = [os.path.join(data_dir, 'train_%d.bin' % i)
+                     for i in config.use_train_bins]
+    else:
+      filenames = glob.glob(data_dir + '/train_*.bin')
+
+    # num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
+  
   elif data_type == 'test':
-    filenames = glob.glob(data_dir + '/test_*.bin')
-    num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
+    if len(config.use_test_bins)>0:
+      log('test_bins specified in config...')
+      filenames = [os.path.join(data_dir, 'test_%d.bin' % i)
+                     for i in config.use_test_bins]
+    else:
+      filenames = glob.glob(data_dir + '/test_*.bin')
+    # num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
+  
   else:
     raise ValueError('inputs data_type not valid')
 
+  total_examples = 0
+  log('loading {} data...'.format(data_type))
   for f in filenames:
     if not tf.gfile.Exists(f):
       raise ValueError('Failed to find file: ' + f)
 
-  # print 'input data type', data_type
-  # print 'constructing inputs, filenames are ', filenames
-  # logging.info(filenames)
+    num_examples_f = os.path.getsize(f)/50404
+    total_examples += num_examples_f
+    log("{}: {} examples".format(f.split('/')[-1], num_examples_f))
+  
+  log("TOTAL: {} examples, ~{:.3f} hours of data \n---".format(total_examples, total_examples*3./3600.))
+  num_examples_per_epoch = total_examples
 
   # Create a queue that produces the filenames to read.
   filename_queue = tf.train.string_input_producer(filenames)
@@ -141,17 +120,16 @@ def inputs(data_type, data_dir, batch_size):
 
   # Subtract off the mean and divide by the variance of the pixels.
   whitened_example = tf.image.per_image_whitening(reshaped_example)
-  print ('%s' % whitened_example)
-
+  
   # cast labels to int32
   read_input.label = tf.cast(read_input.label, tf.int32)
 
   # Ensure that the random shuffling has good mixing properties.
-  min_fraction_of_examples_in_queue = 0.04 # 135,600 examples for train, 4,400 for eval
+  min_fraction_of_examples_in_queue = 0.4 # 135,600 examples for train, 4,400 for eval
   min_queue_examples = int(num_examples_per_epoch *
                            min_fraction_of_examples_in_queue)
 
-  print ('Filling queue with %d images before starting to train. '
+  log('Filling queue with %d images before starting to train. '
          'This will take a few minutes.' % min_queue_examples)
 
   # Generate a batch of images and labels by building up a queue of examples.

@@ -2,30 +2,25 @@ import resource
 from datetime import datetime
 import os.path
 import time
-import logging
 import numpy as np
 import tensorflow as tf
 
 import cnn
 import cnn_eval
 from config import config
-filepath = os.path.dirname(os.path.abspath(__file__))
+from utils import log
 
 # constants
+TRAIN_DIR = config.train_dir
 BATCH_SIZE = config.batch_size
-TRAIN_DIR = os.path.join(filepath, 'tmp/train', config.name)
 MAX_STEPS = config.max_steps
 
 def train():
   with tf.Graph().as_default():
-    # start logging
-    logging.basicConfig(filename=os.path.join(TRAIN_DIR, 'train.log'), level=logging.INFO)
-    logger = logging.getLogger(__name__)
-
+    
     log_str_0 = '===== START TRAIN RUN: ' + str(datetime.now()) + '====='
-    print(log_str_0)
-    logging.info(log_str_0)
-    logging.info(cnn.log())
+    log(log_str_0)
+    log(config)
 
     global_step = tf.Variable(0, trainable=False)
     
@@ -83,20 +78,18 @@ def train():
 
         log_str_1 = ('%s: step %d, loss = %.3f (%.2f examples/sec; %.3f sec/batch), accuracy %.3f   ') % (datetime.now(), step, loss_value,
                              examples_per_sec, sec_per_batch, accuracy_value)
-        log_str_1 += str(loss_breakdown)
-        print(log_str_1)
-        logging.info(log_str_1)
+        # log_str_1 += str(loss_breakdown) # print loss breakdown
+        log(log_str_1)
 
-        print("memory usage: {} Mb".format(float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)/1000000.0))
-        logging.info(float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)/1000000.0)
-
+        log("memory usage: {} Mb".format(float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)/1000000.0))
+        
 
       if (step % config.ckpt_every_n_steps == 0) and (step>0): # save weights to file & validate
 
         checkpoint_path = os.path.join(TRAIN_DIR, 'model.ckpt')
         saver.save(sess, checkpoint_path, global_step=step)
         print "Checkpoint saved at step %d" % step
-        logging.info("Checkpoint saved at step %d" % step)
+        log("Checkpoint saved at step %d" % step)
 
         # validate
         cnn_eval.evaluate(run_once=True)

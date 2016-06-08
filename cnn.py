@@ -6,7 +6,7 @@ import time
 import os
 import re
 import sys
-from utils import _variable, weight_variable, bias_variable, conv2d, read_data_sets, _activation_summary, BatchNorm
+from utils import _variable, conv2d, _activation_summary, BatchNorm, log
 import cnn_input
 from config import config
 FLAGS = tf.app.flags.FLAGS
@@ -19,7 +19,7 @@ if FLAGS.env=='dev':
 elif FLAGS.env=='prod':
   DATA_DIR = '/mnt/deepaccent-data'
 
-NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = config.num_examples_per_epoch_train
+NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 10282
 BATCH_SIZE = config.batch_size # minibatch size
 
 
@@ -56,11 +56,6 @@ FC4_SIZE = config.all_fc_size
 FC5_SIZE = config.all_fc_size
 FC6_SIZE = config.all_fc_size
 NUM_CLASSES = config.num_classes
-
-# LOGGING
-def log():
-  log_str = ('name %s, BATCH_SIZE %d, CONV1_FILTERS %d, CONV2_FILTERS %d, FC3_SIZE %d, FC4_SIZE %d, FC5_SIZE %d, FC6_SIZE %d, WD %.4f, LRinitial %.4f') % (config.name, BATCH_SIZE, CONV1_FILTERS, CONV2_FILTERS, FC3_SIZE, FC4_SIZE, FC5_SIZE, FC6_SIZE, config.fc_wd, config.lr_initial)
-  return log_str
 
 # NETWORK
 def inputs(data_type='train'):
@@ -121,28 +116,28 @@ def inference(examples):
     fc4 = tf.nn.relu(tf.matmul(fc3, weights) + biases, name=scope.name)
     _activation_summary(fc4)
 
-  # FC5
-  with tf.variable_scope('fc5') as scope:
-    weights = _variable('weights', [FC4_SIZE, FC5_SIZE], tf.contrib.layers.xavier_initializer(), wd=config.fc_wd)
-    biases = _variable('biases', [FC5_SIZE], tf.constant_initializer(0.1))
+  # # FC5
+  # with tf.variable_scope('fc5') as scope:
+  #   weights = _variable('weights', [FC4_SIZE, FC5_SIZE], tf.contrib.layers.xavier_initializer(), wd=config.fc_wd)
+  #   biases = _variable('biases', [FC5_SIZE], tf.constant_initializer(0.1))
 
-    fc5 = tf.nn.relu(tf.matmul(fc4, weights) + biases, name=scope.name)
-    _activation_summary(fc5)
+  #   fc5 = tf.nn.relu(tf.matmul(fc4, weights) + biases, name=scope.name)
+  #   _activation_summary(fc5)
 
-  # FC6
-  with tf.variable_scope('fc6') as scope:
-    weights = _variable('weights', [FC5_SIZE, FC6_SIZE], tf.contrib.layers.xavier_initializer(), wd=config.fc_wd)
-    biases = _variable('biases', [FC6_SIZE], tf.constant_initializer(0.1))
+  # # FC6
+  # with tf.variable_scope('fc6') as scope:
+  #   weights = _variable('weights', [FC5_SIZE, FC6_SIZE], tf.contrib.layers.xavier_initializer(), wd=config.fc_wd)
+  #   biases = _variable('biases', [FC6_SIZE], tf.constant_initializer(0.1))
 
-    fc6 = tf.nn.relu(tf.matmul(fc5, weights) + biases, name=scope.name)
-    _activation_summary(fc6)
+  #   fc6 = tf.nn.relu(tf.matmul(fc5, weights) + biases, name=scope.name)
+  #   _activation_summary(fc6)
 
   # softmax
   with tf.variable_scope('softmax_linear') as scope:
     weights = _variable('weights', [FC6_SIZE, NUM_CLASSES], tf.contrib.layers.xavier_initializer())
     biases = _variable('biases', [NUM_CLASSES], tf.constant_initializer(0.0))
     # shape of y_conv is (N,3)
-    softmax_linear = tf.add(tf.matmul(fc6, weights), biases, name=scope.name)
+    softmax_linear = tf.add(tf.matmul(fc4, weights), biases, name=scope.name)
     _activation_summary(softmax_linear)
   return softmax_linear
 

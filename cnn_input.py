@@ -89,7 +89,7 @@ def inputs(data_type, data_dir, batch_size):
   elif data_type == 'test':
     if len(config.use_test_bins)>0:
       log('test_bins specified in config...')
-      filenames = [os.path.join(data_dir, 'test_%d.bin' % i)
+      filenames = [os.path.join(data_dir, 'train_%d.bin' % i)
                      for i in config.use_test_bins]
     else:
       filenames = glob.glob(data_dir + '/test_*.bin')

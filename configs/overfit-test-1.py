@@ -11,7 +11,7 @@ class Config(object):
     return pp_details
 
 config_dict = {
-  'name': 'overfit_test',
+  'name': 'overfit-test-1',
   'summary_every_n_steps': 1,
   'ckpt_every_n_steps': 100, # checkpoint and validate
 

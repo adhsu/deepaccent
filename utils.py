@@ -12,6 +12,8 @@ TRAIN_DIR = config.train_dir
 
 
 # start logging
+if not tf.gfile.Exists(TRAIN_DIR):
+  tf.gfile.MakeDirs(TRAIN_DIR)
 logging.basicConfig(filename=os.path.join(TRAIN_DIR, 'train.log'), level=logging.INFO)
 logger = logging.getLogger(__name__)
 

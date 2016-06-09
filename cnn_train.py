@@ -9,11 +9,20 @@ import cnn
 import cnn_eval
 from config import config
 from utils import log
+FLAGS = tf.app.flags.FLAGS
+
 
 # constants
 TRAIN_DIR = config.train_dir
 BATCH_SIZE = config.batch_size
 MAX_STEPS = config.max_steps
+
+if FLAGS.env=='dev':
+  SUMMARY_DIR = TRAIN_DIR
+  
+elif FLAGS.env=='prod':
+  SUMMARY_DIR = os.path.join('/mnt/deepaccent-results', config.name)
+
 
 def train():
   with tf.Graph().as_default():
@@ -53,7 +62,7 @@ def train():
     tf.train.start_queue_runners(sess=sess)
 
     # set up summary writers
-    train_writer = tf.train.SummaryWriter(TRAIN_DIR, sess.graph)
+    train_writer = tf.train.SummaryWriter(SUMMARY_DIR, sess.graph)
     # validation_writer = tf.train.SummaryWriter(VALIDATE_DIR)
     
     # every 1 step: run train_step, add training summaries

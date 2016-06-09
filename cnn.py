@@ -19,7 +19,7 @@ if FLAGS.env=='dev':
 elif FLAGS.env=='prod':
   DATA_DIR = '/mnt/deepaccent-data'
 
-NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 10282
+NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 5000
 BATCH_SIZE = config.batch_size # minibatch size
 
 

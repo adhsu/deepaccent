@@ -10,7 +10,6 @@ import moving_averages
 from config import config
 TRAIN_DIR = config.train_dir
 
-
 # start logging
 if not tf.gfile.Exists(TRAIN_DIR):
   tf.gfile.MakeDirs(TRAIN_DIR)

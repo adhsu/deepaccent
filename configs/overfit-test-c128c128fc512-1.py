@@ -56,7 +56,7 @@ class Config(object):
     #### EVAL
     self.eval_interval_secs = 60*.5 # how often to run eval
 
-    self.name = 'overfit-test-c{}c{}fc{}-wd{}-1'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size, '{:.0e}'.format(self.fc_wd))
+    self.name = 'overfit-test-c{}c{}fc{}-1'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size)
     self.data_dir = DATA_DIR
     self.train_dir = os.path.join(TRAIN_DIR_ROOT, self.name, 'train')
     self.eval_dir = os.path.join(EVAL_DIR_ROOT, self.name, 'eval')

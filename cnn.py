@@ -17,7 +17,7 @@ filepath = os.path.dirname(os.path.abspath(__file__))
 if FLAGS.env=='dev':
   DATA_DIR = os.path.join(filepath, 'tmp/data')
 elif FLAGS.env=='prod':
-  DATA_DIR = '/mnt/deepaccent-data'
+  DATA_DIR = '/home/connor/mnt/deepaccent-data'
 
 NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 5000
 BATCH_SIZE = config.batch_size # minibatch size

@@ -21,7 +21,7 @@ if FLAGS.env=='dev':
   SUMMARY_DIR = TRAIN_DIR
   
 elif FLAGS.env=='prod':
-  SUMMARY_DIR = os.path.join('/mnt/deepaccent-results', config.name)
+  SUMMARY_DIR = os.path.join('/home/connor/mnt/deepaccent-results', config.name)
 
 
 def train():

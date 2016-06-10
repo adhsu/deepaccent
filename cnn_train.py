@@ -9,6 +9,7 @@ import cnn
 from config import config
 from utils import log
 
+
 def train():
   with tf.Graph().as_default():
     

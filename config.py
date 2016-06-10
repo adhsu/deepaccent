@@ -16,10 +16,12 @@ elif FLAGS.env=='dev':
   DATA_DIR = './tmp/data'
   TRAIN_DIR_ROOT = './tmp'
   EVAL_DIR_ROOT = TRAIN_DIR_ROOT
+  CHECKPOINT_DIR = './tmp/checkpoints'
 elif FLAGS.env=='prod':
   DATA_DIR = '/home/adhsu/mnt/deepaccent-data'
   TRAIN_DIR_ROOT = '/home/adhsu/mnt/deepaccent-results'
   EVAL_DIR_ROOT = TRAIN_DIR_ROOT
+  CHECKPOINT_DIR = '/home/adhsu/checkpoints'
 
 class Config(object):
   def __init__(self):
@@ -27,7 +29,7 @@ class Config(object):
 
     # Model options.
     self.summary_every_n_steps = 1
-    self.ckpt_every_n_steps = 3 # checkpoint and validate
+    self.ckpt_every_n_steps = 1 # checkpoint and validate
 
     #### DATA
     self.train_bins = [1] # leave empty to use all .bins
@@ -53,10 +55,11 @@ class Config(object):
     #### EVAL
     self.eval_interval_secs = 60*.5 # how often to run eval
 
-    self.name = 'overfit-test-c{}c{}fc{}-wd{}-1'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size, '{:.0e}'.format(self.fc_wd))
+    self.name = 'overfit-test-c{}c{}fc{}-3'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size)
     self.data_dir = DATA_DIR
     self.train_dir = os.path.join(TRAIN_DIR_ROOT, self.name, 'train')
     self.eval_dir = os.path.join(EVAL_DIR_ROOT, self.name, 'eval')
+    self.checkpoint_dir = os.path.join(CHECKPOINT_DIR, self.name)
 
     # calculate number of training examples
     if len(self.train_bins) > 0: # if bins are specified
@@ -78,6 +81,8 @@ class Config(object):
       tf.gfile.MakeDirs(self.train_dir)
     if not tf.gfile.Exists(self.eval_dir):
       tf.gfile.MakeDirs(self.eval_dir)
+    if not tf.gfile.Exists(self.checkpoint_dir):
+      tf.gfile.MakeDirs(self.checkpoint_dir)
 
     # print('name is ' + self.name)
 

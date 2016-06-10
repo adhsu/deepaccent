@@ -75,7 +75,7 @@ def train():
         
 
       if (step % config.ckpt_every_n_steps == 0) and (step>0): # save weights to file & validate
-        checkpoint_path = os.path.join(config.train_dir, 'model.ckpt')
+        checkpoint_path = os.path.join(config.checkpoint_dir, 'model.ckpt')
         saver.save(sess, checkpoint_path, global_step=step)
         log("Checkpoint saved at step %d" % step)
 

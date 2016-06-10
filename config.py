@@ -3,11 +3,8 @@ import sys
 import os
 import glob
 from datetime import datetime
-import pprint
 
 FLAGS = tf.app.flags.FLAGS
-pp = pprint.PrettyPrinter(indent=2)
-filepath = os.path.dirname(os.path.abspath(__file__))
 
 tf.app.flags.DEFINE_string('env', 'dev', """either string 'dev' or 'prod'""")
 
@@ -20,8 +17,8 @@ elif FLAGS.env=='dev':
   TRAIN_DIR_ROOT = './tmp'
   EVAL_DIR_ROOT = TRAIN_DIR_ROOT
 elif FLAGS.env=='prod':
-  DATA_DIR = '~/mnt/deepaccent-data'
-  TRAIN_DIR_ROOT = '~/mnt/deepaccent-results'
+  DATA_DIR = '/home/adhsu/mnt/deepaccent-data'
+  TRAIN_DIR_ROOT = '/home/adhsu/mnt/deepaccent-results'
   EVAL_DIR_ROOT = TRAIN_DIR_ROOT
 
 class Config(object):

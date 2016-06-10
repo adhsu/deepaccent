@@ -6,7 +6,7 @@ import time
 import os
 import re
 import sys
-from utils import _variable, conv2d, _activation_summary, BatchNorm, log
+from utils import _variable, conv2d, _activation_summary, BatchNorm
 import cnn_input
 from config import config
 FLAGS = tf.app.flags.FLAGS

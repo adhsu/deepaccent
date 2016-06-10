@@ -3,11 +3,8 @@ import sys
 import os
 import glob
 from datetime import datetime
-import pprint
 
 FLAGS = tf.app.flags.FLAGS
-pp = pprint.PrettyPrinter(indent=2)
-filepath = os.path.dirname(os.path.abspath(__file__))
 
 tf.app.flags.DEFINE_string('env', 'dev', """either string 'dev' or 'prod'""")
 
@@ -20,8 +17,8 @@ elif FLAGS.env=='dev':
   TRAIN_DIR_ROOT = './tmp'
   EVAL_DIR_ROOT = TRAIN_DIR_ROOT
 elif FLAGS.env=='prod':
-  DATA_DIR = '~/mnt/deepaccent-data'
-  TRAIN_DIR_ROOT = '~/mnt/deepaccent-results'
+  DATA_DIR = '/home/adhsu/mnt/deepaccent-data'
+  TRAIN_DIR_ROOT = '/home/adhsu/mnt/deepaccent-results'
   EVAL_DIR_ROOT = TRAIN_DIR_ROOT
 
 class Config(object):
@@ -56,7 +53,7 @@ class Config(object):
     #### EVAL
     self.eval_interval_secs = 60*.5 # how often to run eval
 
-    self.name = 'overfit-test-c{}c{}fc{}-1'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size)
+    self.name = 'overfit-test-c{}c{}fc{}-wd{}-2'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size, '{:.0e}'.format(self.fc_wd))
     self.data_dir = DATA_DIR
     self.train_dir = os.path.join(TRAIN_DIR_ROOT, self.name, 'train')
     self.eval_dir = os.path.join(EVAL_DIR_ROOT, self.name, 'eval')

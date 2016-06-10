@@ -1,17 +1,18 @@
-from datetime import datetime
 import os.path
+import sys
 import math
 import time
+from datetime import datetime
 import numpy as np
 import tensorflow as tf
+
 import cnn
 from config import config
+from utils import log
 
-CHECKPOINT_DIR = config.checkpoint_dir
-EVAL_DIR = config.eval_dir
+#constants
 BATCH_SIZE = config.batch_size
 EVAL_INTERVAL_SECS = config.eval_interval_secs # how often to run eval
-NUM_EXAMPLES = 5005
 
 def eval_once(saver, summary_writer, top_k_op, summary_op):
   """Run Eval once.
@@ -23,7 +24,7 @@ def eval_once(saver, summary_writer, top_k_op, summary_op):
     summary_op: Summary op.
   """
   with tf.Session() as sess:
-    ckpt = tf.train.get_checkpoint_state(CHECKPOINT_DIR)
+    ckpt = tf.train.get_checkpoint_state(config.train_dir)
     if ckpt and ckpt.model_checkpoint_path:
       # Restores from checkpoint
       saver.restore(sess, ckpt.model_checkpoint_path)
@@ -44,7 +45,7 @@ def eval_once(saver, summary_writer, top_k_op, summary_op):
         threads.extend(qr.create_threads(sess, coord=coord, daemon=True,
                                          start=True))
 
-      num_iter = int(math.ceil(NUM_EXAMPLES / BATCH_SIZE)) # ~39
+      num_iter = int(math.ceil(config.num_examples_test / BATCH_SIZE)) # ~39
       true_count = 0  # Counts the number of correct predictions.
       total_sample_count = num_iter * BATCH_SIZE # 5k
       step = 0
@@ -85,7 +86,7 @@ def evaluate(run_once=False):
     # Build the summary operation based on the TF collection of Summaries.
     summary_op = tf.merge_all_summaries()
 
-    summary_writer = tf.train.SummaryWriter(EVAL_DIR, graph)
+    summary_writer = tf.train.SummaryWriter(config.eval_dir, graph)
 
     while True:
       eval_once(saver, summary_writer, top_k_op, summary_op)
@@ -95,9 +96,6 @@ def evaluate(run_once=False):
 
 
 def main(_):
-  # if tf.gfile.Exists(EVAL_DIR):
-  #   tf.gfile.DeleteRecursively(EVAL_DIR)
-  # tf.gfile.MakeDirs(EVAL_DIR)
   
   evaluate()
 

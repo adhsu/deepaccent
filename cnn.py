@@ -12,16 +12,7 @@ from config import config
 FLAGS = tf.app.flags.FLAGS
 
 # CONSTANTS
-tf.app.flags.DEFINE_string('env', 'dev', """either string 'dev' or 'prod'""")
-filepath = os.path.dirname(os.path.abspath(__file__))
-if FLAGS.env=='dev':
-  DATA_DIR = os.path.join(filepath, 'tmp/data')
-elif FLAGS.env=='prod':
-  DATA_DIR = '/mnt/deepaccent-data'
-
-NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 5000
 BATCH_SIZE = config.batch_size # minibatch size
-
 
 # Constants describing the training process.
 MOVING_AVERAGE_DECAY = config.moving_average_decay    # The decay to use for the moving average.
@@ -59,7 +50,7 @@ NUM_CLASSES = config.num_classes
 
 # NETWORK
 def inputs(data_type='train'):
-  return cnn_input.inputs(data_type=data_type, data_dir=DATA_DIR, batch_size=BATCH_SIZE)
+  return cnn_input.inputs(data_type=data_type, data_dir=config.data_dir, batch_size=BATCH_SIZE)
 
 def inference(examples):
 
@@ -116,28 +107,28 @@ def inference(examples):
     fc4 = tf.nn.relu(tf.matmul(fc3, weights) + biases, name=scope.name)
     _activation_summary(fc4)
 
-  # # FC5
-  # with tf.variable_scope('fc5') as scope:
-  #   weights = _variable('weights', [FC4_SIZE, FC5_SIZE], tf.contrib.layers.xavier_initializer(), wd=config.fc_wd)
-  #   biases = _variable('biases', [FC5_SIZE], tf.constant_initializer(0.1))
+  # FC5
+  with tf.variable_scope('fc5') as scope:
+    weights = _variable('weights', [FC4_SIZE, FC5_SIZE], tf.contrib.layers.xavier_initializer(), wd=config.fc_wd)
+    biases = _variable('biases', [FC5_SIZE], tf.constant_initializer(0.1))
 
-  #   fc5 = tf.nn.relu(tf.matmul(fc4, weights) + biases, name=scope.name)
-  #   _activation_summary(fc5)
+    fc5 = tf.nn.relu(tf.matmul(fc4, weights) + biases, name=scope.name)
+    _activation_summary(fc5)
 
-  # # FC6
-  # with tf.variable_scope('fc6') as scope:
-  #   weights = _variable('weights', [FC5_SIZE, FC6_SIZE], tf.contrib.layers.xavier_initializer(), wd=config.fc_wd)
-  #   biases = _variable('biases', [FC6_SIZE], tf.constant_initializer(0.1))
+  # FC6
+  with tf.variable_scope('fc6') as scope:
+    weights = _variable('weights', [FC5_SIZE, FC6_SIZE], tf.contrib.layers.xavier_initializer(), wd=config.fc_wd)
+    biases = _variable('biases', [FC6_SIZE], tf.constant_initializer(0.1))
 
-  #   fc6 = tf.nn.relu(tf.matmul(fc5, weights) + biases, name=scope.name)
-  #   _activation_summary(fc6)
+    fc6 = tf.nn.relu(tf.matmul(fc5, weights) + biases, name=scope.name)
+    _activation_summary(fc6)
 
   # softmax
   with tf.variable_scope('softmax_linear') as scope:
     weights = _variable('weights', [FC6_SIZE, NUM_CLASSES], tf.contrib.layers.xavier_initializer())
     biases = _variable('biases', [NUM_CLASSES], tf.constant_initializer(0.0))
     # shape of y_conv is (N,3)
-    softmax_linear = tf.add(tf.matmul(fc4, weights), biases, name=scope.name)
+    softmax_linear = tf.add(tf.matmul(fc6, weights), biases, name=scope.name)
     _activation_summary(softmax_linear)
   return softmax_linear
 
@@ -148,8 +139,6 @@ def loss(logits, labels):
   cross_entropy_mean = tf.reduce_mean(cross_entropy, name='cross_entropy')
   
   tf.add_to_collection('losses', cross_entropy_mean)
-
-  # tf.scalar_summary('cross_entropy_loss', cross_entropy_mean)
 
   # total_loss = cross_entropy loss + weight decay L2 loss
   total_loss = tf.add_n(tf.get_collection('losses'), name='total_loss')
@@ -182,7 +171,7 @@ def _add_loss_summaries(total_loss):
 
 
 def train(total_loss, global_step):
-  num_batches_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / BATCH_SIZE
+  num_batches_per_epoch = config.num_examples_train / BATCH_SIZE
   decay_steps = int(num_batches_per_epoch * NUM_EPOCHS_PER_DECAY)
 
   lr = tf.train.exponential_decay(INITIAL_LEARNING_RATE,
@@ -227,13 +216,3 @@ def train(total_loss, global_step):
 
   return train_op
 
-def main(_):
-  if not FLAGS.env:
-    msg = ('env flag must be specified. Either dev or prod.')
-    print(msg)
-    return -1
-
-  train()
-
-if __name__ == '__main__':
-  tf.app.run()

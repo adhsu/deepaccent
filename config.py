@@ -1,50 +1,88 @@
+import tensorflow as tf
+import sys
 import os
+import glob
+from datetime import datetime
 import pprint
+
+FLAGS = tf.app.flags.FLAGS
 pp = pprint.PrettyPrinter(indent=2)
+filepath = os.path.dirname(os.path.abspath(__file__))
+
+tf.app.flags.DEFINE_string('env', 'dev', """either string 'dev' or 'prod'""")
+
+if not FLAGS.env:
+  msg = ("""env flag must be specified. Either 'dev' or 'prod'.""")
+  print(msg)
+  sys.exit(1)
+elif FLAGS.env=='dev':
+  DATA_DIR = './tmp/data'
+  TRAIN_DIR_ROOT = './tmp'
+  EVAL_DIR_ROOT = TRAIN_DIR_ROOT
+elif FLAGS.env=='prod':
+  DATA_DIR = '~/mnt/deepaccent-data'
+  TRAIN_DIR_ROOT = '~/mnt/deepaccent-results'
+  EVAL_DIR_ROOT = TRAIN_DIR_ROOT
 
 class Config(object):
-  def __init__(self, d):
-    self.__dict__ = d
+  def __init__(self):
+    # nowTimeStr = datetime.strftime(datetime.now(), '%Y-%m-%d--%H-%M-%S')
+    
+    # Model options.
+    self.summary_every_n_steps = 1
+    self.ckpt_every_n_steps = 3 # checkpoint and validate
 
-  def __str__(self):
-    pp_details = pp.pformat(self.__dict__)
-    return pp_details
+    #### DATA
+    self.train_bins = [1] # leave empty to use all .bins
+    self.test_bins = [1]
+    self.num_classes = 2
+    self.example_height = 300 # time/frames
+    self.example_width = 42 # frequency
 
-config_dict = {
-  'name': 'overfit_test',
-  'summary_every_n_steps': 1,
-  'ckpt_every_n_steps': 100, # checkpoint and validate
+    #### MODEL ARCHITECTURE
+    self.conv1_filters = 128
+    self.conv2_filters = 128
+    self.all_fc_size = 512
+    
+    #### TRAINING
+    self.batch_size = 64
+    self.fc_wd = 0.00 # fc layer weight decay
+    self.lr_initial = 1e-3
+    self.lr_decay_factor = 0.1
+    self.n_epochs_per_decay = 3.0
+    self.max_steps = 1000000
+    self.moving_average_decay = 0.9999
+    
+    #### EVAL
+    self.eval_interval_secs = 60*.5 # how often to run eval
 
-  #### DATA
-  'use_train_bins': [126],
-  'use_test_bins': [128],
+    self.name = 'overfit-test-c{}c{}fc{}-wd{}-1'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size, '{:.0e}'.format(self.fc_wd))
+    self.data_dir = DATA_DIR
+    self.train_dir = os.path.join(TRAIN_DIR_ROOT, self.name, 'train')
+    self.eval_dir = os.path.join(EVAL_DIR_ROOT, self.name, 'eval')
 
-  #### MODEL
-  'num_classes': 2,
-  'example_height': 300, # time/frames
-  'example_width': 42, # frequency
-  'conv1_filters': 16,
-  'conv2_filters': 16,
-  'all_fc_size': 64,
-  'fc_wd': 0.00, # fc layer weight decay
-  
-  #### TRAINING
-  'batch_size': 64, # 26.5k steps/epoch at 128 batch_size
-  'lr_initial': 1e-3,
-  'lr_decay_factor': 0.1,
-  'n_epochs_per_decay': 3.0,
-  'max_steps': 1000000,
-  # 'num_examples_per_epoch_train': 5000, # 678 bins * 5000/bin
-  'moving_average_decay': 0.9999,
-  
-  #### EVAL
-  'eval_interval_secs': 60*.5, # how often to run eval
-  # 'num_examples_per_epoch_eval': 5000 # 22 bins * 5000/bin
-}
+    # calculate number of training examples
+    if len(self.train_bins) > 0: # if bins are specified
+      self.filenames_train = [os.path.join(self.data_dir, 'train_%d.bin' % i) for i in self.train_bins]
+    else: # bins not specified, use all
+      self.filenames_train = glob.glob(os.path.join(self.data_dir, 'train_*.bin'))
 
-filepath = os.path.dirname(os.path.abspath(__file__))
-config_dict['train_dir'] = os.path.join(filepath, 'tmp/train', config_dict['name'])
-config_dict['eval_dir'] = os.path.join(filepath, 'tmp/eval', config_dict['name'])
-config_dict['checkpoint_dir'] = os.path.join(filepath, 'tmp/train', config_dict['name']) # read model checkpoints from here
+    # calculate number of test examples
+    if len(self.test_bins) > 0: # if bins are specified
+      self.filenames_test = [os.path.join(self.data_dir, 'test_%d.bin' % i) for i in self.test_bins]
+    else: # bins not specified, use all
+      self.filenames_test = glob.glob(os.path.join(self.data_dir, 'test_*.bin'))
 
-config = Config(config_dict)
+    self.num_examples_train = sum([int(os.path.getsize(f)/50404) for f in self.filenames_train])
+    self.num_examples_test = sum([int(os.path.getsize(f)/50404) for f in self.filenames_test])
+
+    # make train and eval dirs if they don't exist
+    if not tf.gfile.Exists(self.train_dir):
+      tf.gfile.MakeDirs(self.train_dir)
+    if not tf.gfile.Exists(self.eval_dir):
+      tf.gfile.MakeDirs(self.eval_dir)
+
+    # print('name is ' + self.name)
+
+
+config = Config()

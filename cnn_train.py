@@ -1,36 +1,19 @@
 import resource
-from datetime import datetime
 import os.path
+from datetime import datetime
 import time
 import numpy as np
 import tensorflow as tf
 
 import cnn
-import cnn_eval
 from config import config
 from utils import log
-FLAGS = tf.app.flags.FLAGS
-
-
-# constants
-TRAIN_DIR = config.train_dir
-BATCH_SIZE = config.batch_size
-MAX_STEPS = config.max_steps
-
-if FLAGS.env=='dev':
-  SUMMARY_DIR = TRAIN_DIR
-  
-elif FLAGS.env=='prod':
-  SUMMARY_DIR = os.path.join('/mnt/deepaccent-results', config.name)
-
 
 def train():
   with tf.Graph().as_default():
     
-    log_str_0 = '===== START TRAIN RUN: ' + str(datetime.now()) + '====='
-    log(log_str_0)
-    log(config)
-
+    log('===== START TRAIN RUN: ' + str(datetime.now()) + '=====')
+    
     global_step = tf.Variable(0, trainable=False)
     
     # get examples and labels
@@ -62,12 +45,9 @@ def train():
     tf.train.start_queue_runners(sess=sess)
 
     # set up summary writers
-    train_writer = tf.train.SummaryWriter(SUMMARY_DIR, sess.graph)
-    # validation_writer = tf.train.SummaryWriter(VALIDATE_DIR)
+    train_writer = tf.train.SummaryWriter(config.train_dir, sess.graph)
     
-    # every 1 step: run train_step, add training summaries
-    # every 10 steps: measure validation accuracy, write validation summaries
-    for step in xrange(MAX_STEPS):
+    for step in xrange(config.max_steps):
       
       start_time = time.time()
       summary, loss_value, accuracy_value, _ = sess.run([summary_op, loss, accuracy, train_op])
@@ -80,7 +60,7 @@ def train():
 
       if step % config.summary_every_n_steps == 0: # summaries
         
-        examples_per_sec = BATCH_SIZE / duration
+        examples_per_sec = config.batch_size / duration
         sec_per_batch = float(duration)
         
         train_writer.add_summary(summary, step)
@@ -94,22 +74,12 @@ def train():
         
 
       if (step % config.ckpt_every_n_steps == 0) and (step>0): # save weights to file & validate
-
-        checkpoint_path = os.path.join(TRAIN_DIR, 'model.ckpt')
+        checkpoint_path = os.path.join(config.train_dir, 'model.ckpt')
         saver.save(sess, checkpoint_path, global_step=step)
-        print "Checkpoint saved at step %d" % step
         log("Checkpoint saved at step %d" % step)
 
-        # validate
-        cnn_eval.evaluate(run_once=True)
 
-
-def main(_):
-  # if tf.gfile.Exists(TRAIN_DIR):
-  #   tf.gfile.DeleteRecursively(TRAIN_DIR)
-  # tf.gfile.MakeDirs(TRAIN_DIR)
-  if not tf.gfile.Exists(TRAIN_DIR):
-    tf.gfile.MakeDirs(TRAIN_DIR)
+def main(_):  
   train()
 
 if __name__ == '__main__':

@@ -32,7 +32,7 @@ class Config(object):
     self.ckpt_every_n_steps = 1 # checkpoint and validate
 
     #### DATA
-    self.train_bins = [1] # leave empty to use all .bins
+    self.train_bins = [0] # leave empty to use all .bins
     self.test_bins = [1]
     self.num_classes = 2
     self.example_height = 300 # time/frames
@@ -55,7 +55,7 @@ class Config(object):
     #### EVAL
     self.eval_interval_secs = 60*.5 # how often to run eval
 
-    self.name = 'overfit-test-c{}c{}fc{}-4'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size)
+    self.name = 'overfit-test-c{}c{}fc{}-5'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size)
     self.data_dir = DATA_DIR
     self.train_dir = os.path.join(TRAIN_DIR_ROOT, self.name, 'train')
     self.eval_dir = os.path.join(EVAL_DIR_ROOT, self.name, 'eval')

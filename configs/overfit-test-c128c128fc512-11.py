@@ -18,10 +18,10 @@ elif FLAGS.env=='dev':
   EVAL_DIR_ROOT = TRAIN_DIR_ROOT
   CHECKPOINT_DIR = './tmp/checkpoints'
 elif FLAGS.env=='prod':
-  DATA_DIR = '/home/adhsu/mnt/deepaccent-data'
-  TRAIN_DIR_ROOT = '/home/adhsu/mnt/deepaccent-results'
+  DATA_DIR = '/home/connor/mnt/deepaccent-data'
+  TRAIN_DIR_ROOT = '/home/connor/mnt/deepaccent-results'
   EVAL_DIR_ROOT = TRAIN_DIR_ROOT
-  CHECKPOINT_DIR = '/home/adhsu/checkpoints'
+  CHECKPOINT_DIR = '/home/connor/checkpoints'
 
 class Config(object):
   def __init__(self):
@@ -29,7 +29,7 @@ class Config(object):
 
     # Model options.
     self.summary_every_n_steps = 1
-    self.ckpt_every_n_steps = 1 # checkpoint and validate
+    self.ckpt_every_n_steps = 500 # checkpoint and validate
 
     #### DATA
     self.train_bins = [0] # leave empty to use all .bins

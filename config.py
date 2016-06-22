@@ -40,8 +40,8 @@ class Config(object):
 
     #### MODEL ARCHITECTURE
     self.conv1_filters = 128
-    self.conv2_filters = 128
-    self.all_fc_size = 512
+    self.conv2_filters = 256
+    self.all_fc_size = 1024
     
     #### TRAINING
     self.batch_size = 64
@@ -55,7 +55,7 @@ class Config(object):
     #### EVAL
     self.eval_interval_secs = 60*.5 # how often to run eval
 
-    self.name = 'overfit-c{}c{}fc{}-6'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size)
+    self.name = 'overfit-c{}c{}fc{}-7'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size)
     self.data_dir = DATA_DIR
     self.train_dir = os.path.join(TRAIN_DIR_ROOT, self.name, 'train')
     self.eval_dir = os.path.join(EVAL_DIR_ROOT, self.name, 'eval')

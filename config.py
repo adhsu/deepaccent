@@ -40,14 +40,14 @@ class Config(object):
 
     #### MODEL ARCHITECTURE
     self.conv1_filters = 128
-    self.conv2_filters = 256
-    self.all_fc_size = 1024
+    self.conv2_filters = 128
+    self.all_fc_size = 512
     
     #### TRAINING
     self.batch_size = 64
     self.fc_wd = 0.00 # fc layer weight decay
     self.lr_initial = 1e-3
-    self.lr_decay_factor = 0.1
+    self.lr_decay_factor = 0.0
     self.n_epochs_per_decay = 3.0
     self.max_steps = 1000000
     self.moving_average_decay = 0.9999
@@ -55,7 +55,7 @@ class Config(object):
     #### EVAL
     self.eval_interval_secs = 60*.5 # how often to run eval
 
-    self.name = 'overfit-test-c{}c{}fc{}-5'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size)
+    self.name = 'overfit-c{}c{}fc{}-6'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size)
     self.data_dir = DATA_DIR
     self.train_dir = os.path.join(TRAIN_DIR_ROOT, self.name, 'train')
     self.eval_dir = os.path.join(EVAL_DIR_ROOT, self.name, 'eval')

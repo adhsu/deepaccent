@@ -40,7 +40,7 @@ class Config(object):
 
     #### MODEL ARCHITECTURE
     self.conv1_filters = 128
-    self.conv2_filters = 256
+    self.conv2_filters = 128
     self.all_fc_size = 1024
     
     #### TRAINING
@@ -48,7 +48,7 @@ class Config(object):
     self.fc_wd = 0.00 # fc layer weight decay
     self.lr_initial = 1e-3
     self.lr_decay_factor = 0.0
-    self.n_epochs_per_decay = 3.0
+    self.n_epochs_per_decay = 30000.0
     self.max_steps = 1000000
     self.moving_average_decay = 0.9999
     

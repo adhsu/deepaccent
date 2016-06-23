@@ -32,15 +32,15 @@ class Config(object):
     self.ckpt_every_n_steps = 500 # checkpoint and validate
 
     #### DATA
-    self.train_bins = [0] # leave empty to use all .bins
-    self.test_bins = [1]
+    self.train_bins = [1,10,40,80,120] # leave empty to use all .bins
+    self.test_bins = [1,2,3]
     self.num_classes = 2
     self.example_height = 300 # time/frames
     self.example_width = 42 # frequency
 
     #### MODEL ARCHITECTURE
-    self.conv1_filters = 128
-    self.conv2_filters = 128
+    self.conv1_filters = 256
+    self.conv2_filters = 512
     self.all_fc_size = 1024
     
     #### TRAINING

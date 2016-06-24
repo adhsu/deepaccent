@@ -29,22 +29,22 @@ class Config(object):
 
     # Model options.
     self.summary_every_n_steps = 1
-    self.ckpt_every_n_steps = 500 # checkpoint and validate
+    self.ckpt_every_n_steps = 250 # checkpoint and validate
 
     #### DATA
-    self.train_bins = [1,10,40,80,120] # leave empty to use all .bins
-    self.test_bins = [1,2,3]
+    self.train_bins = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50] 
+    self.test_bins = [1,2,3,4,5]
     self.num_classes = 2
     self.example_height = 300 # time/frames
     self.example_width = 42 # frequency
 
     #### MODEL ARCHITECTURE
     self.conv1_filters = 256
-    self.conv2_filters = 512
+    self.conv2_filters = 256
     self.all_fc_size = 1024
     
     #### TRAINING
-    self.batch_size = 64
+    self.batch_size = 128
     self.fc_wd = 0.00 # fc layer weight decay
     self.lr_initial = 1e-3
     self.lr_decay_factor = 0.0
@@ -55,7 +55,7 @@ class Config(object):
     #### EVAL
     self.eval_interval_secs = 60*.5 # how often to run eval
 
-    self.name = 'overfit-c{}c{}fc{}-7'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size)
+    self.name = 'c{}c{}fc{}-200h'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size)
     self.data_dir = DATA_DIR
     self.train_dir = os.path.join(TRAIN_DIR_ROOT, self.name, 'train')
     self.eval_dir = os.path.join(EVAL_DIR_ROOT, self.name, 'eval')

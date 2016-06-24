@@ -39,7 +39,7 @@ class Config(object):
     self.example_width = 42 # frequency
 
     #### MODEL ARCHITECTURE
-    self.conv1_filters = 256
+    self.conv1_filters = 128
     self.conv2_filters = 256
     self.all_fc_size = 1024
     

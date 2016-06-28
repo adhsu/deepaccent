@@ -45,17 +45,17 @@ class Config(object):
     
     #### TRAINING
     self.batch_size = 128
-    self.fc_wd = 0.00 # fc layer weight decay
+    self.fc_wd = 0.001 # fc layer weight decay
     self.lr_initial = 1e-3
-    self.lr_decay_factor = 0.0
-    self.n_epochs_per_decay = 30000.0
-    self.max_steps = 1000000
+    self.lr_decay_factor = 0.5
+    self.n_epochs_per_decay = 4.0
+    self.max_steps = 40000
     self.moving_average_decay = 0.9999
     
     #### EVAL
-    self.eval_interval_secs = 60*.5 # how often to run eval
+    self.eval_interval_secs = 60*30 # how often to run eval
 
-    self.name = 'c{}c{}fc{}-200h'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size)
+    self.name = 'c{}c{}fc{}-wd'.format(self.conv1_filters, self.conv2_filters, self.all_fc_size)
     self.data_dir = DATA_DIR
     self.train_dir = os.path.join(TRAIN_DIR_ROOT, self.name, 'train')
     self.eval_dir = os.path.join(EVAL_DIR_ROOT, self.name, 'eval')
